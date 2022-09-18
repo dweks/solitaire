@@ -2,21 +2,34 @@ public class Card {
     protected Value value;
     protected Suit suit;
     protected String color;
+    protected boolean revealed;
 
     public Card(Value value, Suit suit){
         this.value = value;
         this.suit = suit;
         if(this.suit == Suit.DIAMOND || this.suit == Suit.HEART)
-            this.color = "/";
+            this.color = "+";
         else
-            this.color = "\\";
+            this.color = "-";
+        this.revealed = false;
+    }
+
+    public void revealCard() {
+        this.revealed = true;
+    }
+    public void hideCard() {
+        this.revealed = false;
     }
 
     public void printCard() {
-        String maybeSpace = "";
-        if(this.value.valueString().length() == 1)
-            maybeSpace = " ";
-        System.out.print(maybeSpace + this.value.valueString() + this.color + this.getSuitString());
+        if(this.revealed) {
+            String maybeSpace = "";
+            if (this.value.valueString().length() == 1)
+                maybeSpace = " ";
+            System.out.print(this.color + maybeSpace + this.value.valueString() + this.getSuitString());
+        } else {
+            System.out.print("____");
+        }
     }
 
     public String getSuitString() {
@@ -29,33 +42,28 @@ public class Card {
         return null;
     }
 
-    public Suit getSuitEnum(){
-        return this.suit;
+    public Suit getSuitEnum(){ return this.suit; }
+    public int getValueNumber() { return this.value.valueNumber(); }
+    public String getValueString() { return this.value.valueString(); }
+    public String getColorString() { return this.color; }
+
+    // This card's value is above the destination card's value
+    public boolean isAbove(int destinationValue){
+        return this.value.valueNumber() == destinationValue - 1;
     }
 
-    public int getValueNumber() {
-        return this.value.valueNumber();
+    // This card's color is opposite the destination card's color
+    public boolean isAlternateColor(String destinationColor) {
+        return this.color == destinationColor;
     }
 
-    public String getValueString() {
-        return this.value.valueString();
+    // This card may be placed on top of destination pile
+    public boolean compatiblePile(Card card){
+        return this.isAbove(card.getValueNumber()) && this.isAlternateColor(card.getColorString());
     }
 
-    public boolean isAbove(int otherValue){
-        if(value.valueNumber() == otherValue + 1)
-            return true;
-        return false;
-    }
-
-    public boolean isBelow(int otherValue){
-        if(value.valueNumber() == otherValue - 1)
-            return true;
-        return false;
-    }
-
+    // This card's suit matches the destination card's suit
     public boolean isSameSuit(Suit otherSuit) {
-        if(otherSuit == this.suit)
-            return true;
-        return false;
+        return otherSuit == this.suit;
     }
 }
