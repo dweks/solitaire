@@ -1,16 +1,14 @@
 public class Value {
     private int code;
-    public Value(int code) throws Exception {
-        if(code < 1 || code > 13)
-            throw new Exception("Error: Value(): code out of range");
+    public Value(int code){
         this.code = code;
     }
 
-    public int valueNumber() {
+    public int asNumber() {
         return this.code;
     }
 
-    public String valueString() {
+    public String asString() {
         switch (this.code) {
             case 1: return "A";
             case 2: return "2";

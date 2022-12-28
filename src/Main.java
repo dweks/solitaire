@@ -1,50 +1,49 @@
 import java.util.Vector;
 
-public class Main {
+public class Main extends Interface {
+    static Deck deck = new Deck();
+    static Vector<Tableau> tableau = new Vector<>();
+    static Vector<Foundation> foundation = new Vector<>();
+
     public static void main(String[] args) {
-        try {
-            Deck deck = new Deck();
-            deck.shuffleDeck();
-            Vector<Pile> allPiles = new Vector<>();
-            int numPiles = 7;
-            int longestPile = 0;
-            int rowHeader = 1;
-            char columnHeader = 'A';
-
-            for(int i = 0; i < numPiles; ++i) {
-                allPiles.add(deck.extractPile(i + 2));
-                allPiles.get(i).revealLast();
-                if(allPiles.get(i).size() > longestPile)
-                    longestPile = allPiles.get(i).size();
+        initialize();
+        while(true){
+            try{
+                int [] action = input.get();
+                System.out.println(validateInput(action));
+            } catch (InvalidInput e) {
+                System.out.println("Invalid input: " + e.getMessage());
+            } catch (IllegalMove e) {
+                System.out.println("Illegal move: " + e.getMessage());
+            } catch (InvalidOption e) {
+                System.out.println("Invalid option: " + e.getMessage());
             }
-
-            Display.space(5);
-            for(int i = 0; i < numPiles; ++i) {
-                System.out.print(columnHeader);
-                Display.space(7);
-                ++columnHeader;
-            }
-            System.out.println();
-
-            for(int i = 0; i < longestPile; ++i) {
-                System.out.print(rowHeader);
-                Display.space(4);
-                for(int j = 0; j < numPiles; ++j) {
-                    if(allPiles.get(j).size() - 1 >= i) {
-                        allPiles.get(j).allCards.get(i).printCard();
-                    } else {
-                        Display.space(4);
-                    }
-                    Display.space(4);
-                }
-                System.out.println();
-                ++rowHeader;
-            }
-
-
         }
-        catch (Exception e) {
-            e.printStackTrace();
+//        Display.displayInstructions();
+//        Display.displayBoard(tableau, foundation, deck);
+    }
+
+    static void update() {
+        computeTableauHeight(tableau);
+    }
+
+    static void initialize() {
+        for (int i = 0; i < 7; ++i) {
+            tableau.add(new Tableau(deck.extractTableau(i + 1)));
+            tableau.get(i).revealLast();
+            
+        }
+        for (int i = 0; i < 4; i++) {
+            foundation.add(new Foundation(new Vector<Card>()));
+        }
+    }
+    static void TESTS() {
+        Card addCard = new Card(new Value(1), Suit.SPADE);
+        addCard.revealCard();
+        try {
+            foundation.get(0).appendCard(addCard);
+        } catch (IllegalMove e) {
+            System.out.println(e.getMessage());
         }
     }
 }

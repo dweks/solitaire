@@ -1,31 +1,16 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Vector;
 
-public class Pile{
-	protected ArrayList<Card> allCards = new ArrayList<>();
-	public Pile(List<Card> cards) {
-		allCards.addAll(cards);
+abstract public class Pile{
+	protected Vector<Card> cards = new Vector<>();
+	public Pile(Vector<Card> cards) {
+		this.cards.addAll(cards);
 	}
 
-	public int size() { return this.allCards.size(); }
-	public void revealLast() { allCards.get(allCards.size() - 1).revealCard(); }
-	public Card getLast() { return this.allCards.get(allCards.size() - 1); }
-	public void appendOne(Card card) { allCards.add(card); }
-	public void appendMany(Pile pile) { allCards.addAll(pile.allCards); }
-
-	public Pile extractMany(int startIndex){
-		int endIndex = this.allCards.size() - 1;
-		Pile newPile = new Pile((ArrayList<Card>) this.allCards.subList(startIndex, endIndex));
-		this.allCards.subList(startIndex, endIndex).clear();
-		return newPile;
+	public String printCertainCard(int index) {
+		return cards.get(index).getCardString();
 	}
 
-	// For testing
-	public void printPile() {
-		for(Card card : allCards) {
-			card.printCard();
-			System.out.println();
-		}
+	public int size() {
+		return cards.size();
 	}
-
 }

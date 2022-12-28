@@ -1,35 +1,59 @@
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Vector;
 
 public class Deck {
-	ArrayList<Card> allCards = new ArrayList<>();
-	public Deck() throws Exception {
-		generateDeck();
-	}
-	public void generateDeck() throws Exception {
+	Vector<Card> stock = new Vector<>();
+	Vector<Card> talon = new Vector<>();
+
+	public Deck() {
 		for(Suit suit : Suit.values()){
 			for(int i = 1; i < 14; ++i) {
-				allCards.add(new Card(new Value(i), suit));
+				stock.add(new Card(new Value(i), suit));
 			}
 		}
+		Collections.shuffle(stock);
 	}
 
-	public void shuffleDeck() {
-		Collections.shuffle(allCards);
+	public Vector<Card> extractTableau(int size) {
+		Vector<Card> hold = new Vector<>();
+		hold.addAll(stock.subList(stock.size() - size, stock.size()));
+		stock.subList(stock.size() - size, stock.size()).clear();
+		return hold;
 	}
 
-	public Pile extractPile(int size) {
-		int startIndex = allCards.size() - size;
-		int endIndex = allCards.size() - 1;
-		Pile newPile = new Pile(allCards.subList(startIndex, endIndex));
-		allCards.subList(startIndex, endIndex).clear();
-		return newPile;
-	}
-
-	public void printDeck() {
-		for(Card card : allCards) {
-			card.printCard();
-			System.out.println();
+	public void refillStock() {
+		for(Card card : talon){
+			stock.add(card);
 		}
+		talon.clear();
 	}
+
+	public boolean next(){
+		if(stock.isEmpty())
+			return false;
+		Card hold = stock.get(stock.size() - 1);
+		hold.revealCard();
+		stock.remove(stock.size() - 1);
+		return talon.add(hold);
+	}
+
+	public Vector<String> getTalonStrings(){
+		Vector<String> talonCardNames = new Vector<>();
+		if (talon.size() == 0)
+			return talonCardNames;
+		else if(talon.size() == 1)
+			talonCardNames.add(talon.get(0).getCardString());
+		else if(talon.size() == 2) {
+			talonCardNames.add(talon.get(1).getCardString());
+			talonCardNames.add(talon.get(0).getCardString());
+		}
+		else {
+			int top = talon.size() - 1;
+			for (int i = top; i > top - 3; i--) {
+				talonCardNames.add(talon.get(i).getCardString());
+			}
+		}
+		return talonCardNames;
+	}
+
 }

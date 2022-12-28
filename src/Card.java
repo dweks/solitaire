@@ -8,62 +8,64 @@ public class Card {
         this.value = value;
         this.suit = suit;
         if(this.suit == Suit.DIAMOND || this.suit == Suit.HEART)
-            this.color = "+";
-        else
             this.color = "-";
+        else
+            this.color = "|";
         this.revealed = false;
     }
 
     public void revealCard() {
-        this.revealed = true;
+        revealed = true;
     }
     public void hideCard() {
-        this.revealed = false;
+        revealed = false;
     }
 
-    public void printCard() {
-        if(this.revealed) {
+    public String getCardString() {
+        if(revealed) {
             String maybeSpace = "";
-            if (this.value.valueString().length() == 1)
+            if (value.asString().length() == 1)
                 maybeSpace = " ";
-            System.out.print(this.color + maybeSpace + this.value.valueString() + this.getSuitString());
+//            return color + maybeSpace + value.asString() + " " + getSuitString();
+            return maybeSpace + value.asString() + color + " " + getSuitString();
         } else {
-            System.out.print("____");
+            return "#####";
         }
+    }
+    public String getShortCardString() {
+        String maybeSpace = "";
+        revealed = true;
+        if (value.asString().length() == 1)
+            maybeSpace = " ";
+        return maybeSpace + value.asString() + getSuitString();
     }
 
     public String getSuitString() {
-        switch (this.suit) {
-            case DIAMOND -> {return "D";}
-            case CLUB -> {return "C";}
-            case HEART -> {return "H";}
-            case SPADE -> {return "S";}
+        switch (suit) {
+            case DIAMOND -> {return "d";}
+            case CLUB -> {return "c";}
+            case HEART -> {return "h";}
+            case SPADE -> {return "s";}
         }
         return null;
     }
 
-    public Suit getSuitEnum(){ return this.suit; }
-    public int getValueNumber() { return this.value.valueNumber(); }
-    public String getValueString() { return this.value.valueString(); }
-    public String getColorString() { return this.color; }
-
+    // This card is an ace (only relevant for being first card on foundation)
+    public boolean isAce() {
+        return value.asString() == "A";
+    }
     // This card's value is above the destination card's value
-    public boolean isAbove(int destinationValue){
-        return this.value.valueNumber() == destinationValue - 1;
+    public boolean isOneAbove(int destinationValue){
+        return value.asNumber() == destinationValue - 1;
     }
 
-    // This card's color is opposite the destination card's color
-    public boolean isAlternateColor(String destinationColor) {
-        return this.color == destinationColor;
+    // This card may be placed on top of destination tableau
+    public boolean compatibleTableau(Card destination){
+        return isOneAbove(destination.value.asNumber()) && color != destination.color;
     }
 
-    // This card may be placed on top of destination pile
-    public boolean compatiblePile(Card card){
-        return this.isAbove(card.getValueNumber()) && this.isAlternateColor(card.getColorString());
-    }
-
-    // This card's suit matches the destination card's suit
-    public boolean isSameSuit(Suit otherSuit) {
-        return otherSuit == this.suit;
+    // This card may be placed on top of destination foundation
+    public boolean compatibleFoundation(Card destination){
+        return isOneAbove(destination.value.asNumber()) && suit == destination.suit;
     }
 }
